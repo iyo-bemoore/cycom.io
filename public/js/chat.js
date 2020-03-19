@@ -3,6 +3,7 @@ const messageHolder = document.querySelector(".message");
 const form = document.querySelector(".form");
 const formInput = document.querySelector(".form-input");
 const locationButton = document.querySelector(".location-button");
+const deliveryMessage = document.querySelector(".delivery");
 
 const setAndDisplayAlertMessage = (inputMessage, eventType) => {
   const alertContainer = document.querySelector(".message-alert");
@@ -37,7 +38,9 @@ const createandAddMessageBubble = (elementType, eventType, value) => {
 form.addEventListener("submit", event => {
   event.preventDefault();
   if (formInput.value) {
-    socket.emit("incoming", formInput.value);
+    socket.emit("incoming", formInput.value, message => {
+      deliveryMessage.textContent = message;
+    });
   }
   formInput.value = "";
 });
@@ -64,8 +67,9 @@ socket.on("member_left", message => {
   setAndDisplayAlertMessage(message, "leave");
 });
 
-socket.on("emitted", value => {
+socket.on("emitted", (value, callback) => {
   createandAddMessageBubble("p", "emitted", value);
+  callback();
 });
 
 socket.on("link", value => {

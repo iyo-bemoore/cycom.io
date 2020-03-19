@@ -48,6 +48,7 @@ body {
   color: #fff;
 }
 .message-bubble {
+  position: relative;
   margin: 0.3rem;
   padding: 0.3rem;
   background-color: #054640;
@@ -57,8 +58,18 @@ body {
   border-radius: 4px;
 }
 .message {
+  position: relative;
   display: block;
   color: #fff;
+}
+.delivery {
+  position: absolute;
+  right: 0px;
+  top: 29px;
+  right: 2px;
+  color: #fff;
+  font-size: 12px;
+  text-transform: lowercase;
 }
 .form {
   padding: 1rem;

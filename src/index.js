@@ -19,8 +19,9 @@ io.on("connection", socket => {
   socket.emit("welcome", messages["welcome"]);
   socket.broadcast.emit("new_member", messages["new_member"]);
 
-  socket.on("incoming", value => {
+  socket.on("incoming", (value, callback) => {
     io.emit("emitted", value);
+    callback("Delivered");
   });
 
   socket.on("location", location => {
