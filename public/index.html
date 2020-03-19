@@ -3,9 +3,50 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Montserrat&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/base.css" />
     <title>Cycomm</title>
   </head>
   <body>
-    <p>Chat Application</p>
+    <div class="container">
+      <div class="header">
+        <h3 class="header-text">
+          CYComm Technologies
+        </h3>
+      </div>
+      <div class="message-container">
+        <div class="message-alert"><p class="alert"></p></div>
+        <div class="message-bubble">
+          <p class="message"></p>
+        </div>
+      </div>
+      <div class="form-container">
+        <form class="form">
+          <div class="input-group">
+            <button
+              onkeypress="return event.keyCode!=13"
+              type="button"
+              class="location-button"
+            >
+              Share location
+            </button>
+            <input
+              class="form-input"
+              type="text"
+              name=""
+              id=""
+              placeholder="Write something..."
+            />
+          </div>
+          <button type="submit" class="form-button">SEND</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/chat.js"></script>
   </body>
 </html>
