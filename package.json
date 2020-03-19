@@ -1,0 +1,23 @@
+{
+  "name": "cycomm",
+  "version": "1.0.0",
+  "description": "Communication tool, using Socket.io library",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2imad/cycom.io.git"
+  },
+  "author": "Imad Youssoufi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/2imad/cycom.io/issues"
+  },
+  "homepage": "https://github.com/2imad/cycom.io#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
