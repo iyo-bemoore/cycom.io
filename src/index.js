@@ -2,41 +2,52 @@ const path = require("path");
 const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
-const messages = require("./config/messages");
+const Filter = require("bad-words");
 
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
+const {
+  generateMessages,
+  generateLocationMessage
+} = require("./utils/messages");
+const port = process.env.PORT || 3000;
+const publicDirectoryPath = path.join(__dirname, "../public");
 
-const PORT = process.env.PORT || 3000;
-const publicDirectory = path.join(__dirname, "../public");
-
-app.use(express.static(publicDirectory));
+app.use(express.static(publicDirectoryPath));
 
 io.on("connection", socket => {
-  console.log("Connected to client");
+  console.log("New WebSocket connection");
 
-  socket.emit("welcome", messages["welcome"]);
-  socket.broadcast.emit("new_member", messages["new_member"]);
+  socket.emit("message", generateMessages("Welcome"));
+  socket.broadcast.emit("message", generateMessages("A new user has joined!"));
 
-  socket.on("incoming", (value, callback) => {
-    io.emit("emitted", value);
-    callback("Delivered");
+  socket.on("sendMessage", (message, callback) => {
+    const filter = new Filter();
+
+    if (filter.isProfane(message)) {
+      return callback("Profanity is not allowed!");
+    }
+
+    io.emit("message", generateMessages(message));
+    callback();
   });
 
-  socket.on("location", location => {
+  socket.on("sendLocation", (coords, callback) => {
     io.emit(
-      "link",
-      `https://google.com/maps?q=${location.latitude},${location.longitude}`,
-      "link"
+      "locationMessage",
+      generateLocationMessage(
+        `https://google.com/maps?q=${coords.latitude},${coords.longitude}`
+      )
     );
+    callback();
   });
 
   socket.on("disconnect", () => {
-    io.emit("member_left", messages["member_left"]);
+    io.emit("message", generateMessages("A user has left!"));
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`Listening on ${PORT}`);
+server.listen(port, () => {
+  console.log(`Server is up on port ${port}!`);
 });
