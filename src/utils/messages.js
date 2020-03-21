@@ -6,15 +6,17 @@ const messages = {
   location_shared: "Location shared"
 };
 
-const generateMessages = text => {
+const generateMessages = (text, user) => {
   return {
+    user,
     text,
     createdAt: new Date().getTime()
   };
 };
 
-const generateLocationMessage = url => {
+const generateLocationMessage = (url, user) => {
   return {
+    user,
     url,
     createdAt: new Date().getTime()
   };
