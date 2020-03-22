@@ -4,12 +4,16 @@
     <title>CYComm</title>
     <link rel="stylesheet" href="/css/styles.css" />
     <link rel="shortcut icon" href="/img/favicon.png" type="image/x-icon" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Montserrat&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div class="centered-form">
       <div class="centered-form__box">
-        <h1>Join CYComm room</h1>
-        <form action="/chat.html">
+        <h1>CyComm</h1>
+        <form id="joinForm">
           <label for="">Display name</label>
           <input
             autocomplete="off"
@@ -26,9 +30,26 @@
             required
             placeholder="Room"
           />
-          <button>Join</button>
+          <button type="submit">Join</button>
         </form>
       </div>
     </div>
+
+    <script>
+      const getFormData = event => {
+        event.preventDefault();
+        let $joinForm = document.forms.joinForm;
+        const formData = new FormData($joinForm);
+        const inputsData = {
+          username: formData.get("username"),
+          room: formData.get("room")
+        };
+        window.localStorage.setItem("userData", JSON.stringify(inputsData));
+        location.href = "/chat.html";
+      };
+      document
+        .querySelector("#joinForm")
+        .addEventListener("submit", getFormData);
+    </script>
   </body>
 </html>

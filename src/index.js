@@ -52,6 +52,15 @@ io.on("connection", socket => {
     callback();
   });
 
+  socket.on("typing", data => {
+    const { user, error } = getUser(socket.id);
+    if (data.typing === true) {
+      socket.broadcast.to(user.room).emit("display", data);
+    } else {
+      socket.broadcast.to(user.room).emit("display", data);
+    }
+  });
+
   socket.on("sendMessage", (message, callback) => {
     const filter = new Filter();
     const { user, error } = getUser(socket.id);

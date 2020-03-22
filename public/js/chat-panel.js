@@ -1,21 +1,16 @@
 const socket = io();
-
+console.log("running");
 // Elements
 const $messageForm = document.querySelector("#message-form");
 const $messageFormInput = $messageForm.querySelector("input");
 const $messageFormButton = $messageForm.querySelector("button");
 const $sendLocationButton = document.querySelector("#send-location");
 const $messages = document.querySelector("#messages");
-
 // Templates
 const messageTemplate = document.querySelector("#message-template").innerHTML;
 const urlTemplate = document.querySelector("#link-template").innerHTML;
 const sidebarTemplate = document.querySelector("#sidebar-template").innerHTML;
 //Options
-
-const { username, room } = Qs.parse(location.search, {
-  ignoreQueryPrefix: true
-});
 
 const autoscroll = () => {
   // New message element
@@ -39,6 +34,8 @@ const autoscroll = () => {
     $messages.scrollTop = $messages.scrollHeight;
   }
 };
+
+const { username, room } = JSON.parse(window.localStorage.getItem("userData"));
 
 socket.on("message", ({ text, createdAt, user }) => {
   const html = Mustache.render(messageTemplate, {
@@ -70,7 +67,6 @@ socket.on("roomStatus", ({ room, users }) => {
 
 $messageForm.addEventListener("submit", e => {
   e.preventDefault();
-
   const message = e.target.elements.message.value;
   if (!message) {
     return;
@@ -87,6 +83,51 @@ $messageForm.addEventListener("submit", e => {
 
     console.log("Message delivered!");
   });
+});
+
+let typing = false;
+let timeOut = undefined;
+
+const typingTimeout = () => {
+  typing = false;
+  socket.emit("typing", { username, typing: false });
+};
+
+$messageForm.addEventListener("keypress", e => {
+  if (e.wich !== 13) {
+    socket.emit("typing", { username, typing: true });
+    clearTimeout(timeOut);
+    timeOut = setTimeout(typingTimeout, 3000);
+  } else {
+    clearTimeout(timeOut);
+    typingTimeout();
+  }
+});
+
+const createOrRemoveTypingContainer = (user, input) => {
+  const $typingContainer = document.querySelector("#typing");
+  const $messageContainer = document.createElement("div");
+
+  if (!$typingContainer.hasChildNodes() && input === "create") {
+    $typingContainer.classList.remove("hidden");
+    const $messageHolder = document.createElement("span");
+    $messageContainer.classList.add("message-typing");
+    $messageHolder.textContent = `${user} is typing`;
+    $messageContainer.appendChild($messageHolder);
+    $typingContainer.appendChild($messageContainer);
+  } else if ($typingContainer.hasChildNodes() && input === "remove") {
+    $typingContainer.classList.add("hidden");
+    $typingContainer.innerHTML = "";
+  }
+};
+
+socket.on("display", ({ username, typing }) => {
+  console.log(typing);
+  if (typing) {
+    createOrRemoveTypingContainer(username, "create");
+  } else {
+    createOrRemoveTypingContainer(username, "remove");
+  }
 });
 
 $sendLocationButton.addEventListener("click", () => {
@@ -108,7 +149,6 @@ $sendLocationButton.addEventListener("click", () => {
     );
   });
 });
-
 socket.emit("join", { username, room }, error => {
   if (error) {
     alert(error);
